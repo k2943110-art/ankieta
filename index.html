@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wielki Test Cierpliwości - 100 Pytań</title>
+    <title>Ankieta Personalizowana - 100 Pytań</title>
     <style>
         body {
             margin: 0; padding: 0; overflow: hidden;
-            font-family: 'Comic Sans MS', cursive; /* Dla lepszego efektu irytacji */
-            background: #ffffff; transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive; /* Irytująca czcionka */
+            background: white; transition: all 0.3s;
             display: flex; justify-content: center; align-items: center; height: 100vh;
         }
-        #survey-box {
+        #ui-container {
             background: rgba(255, 255, 255, 0.95);
             padding: 40px; border-radius: 20px;
             box-shadow: 0 0 30px rgba(0,0,0,0.2);
-            text-align: center; z-index: 9999; position: relative;
+            text-align: center; z-index: 1000; position: relative;
             max-width: 500px; width: 90%; border: 2px solid #000;
         }
         .bouncing-item {
             position: absolute; white-space: nowrap; font-weight: bold;
-            pointer-events: none; z-index: 1000;
+            pointer-events: none; z-index: 1500;
         }
-        .shape { position: absolute; pointer-events: none; z-index: 500; }
+        .shape { position: absolute; pointer-events: none; z-index: 500; opacity: 0.7; }
+        .bouncing-text {
+            position: absolute; white-space: nowrap; font-weight: bold;
+            font-size: 24px; color: #ff0000; pointer-events: none; z-index: 2000;
+        }
         button {
             padding: 15px 30px; margin: 10px; cursor: pointer;
             border-radius: 10px; border: 2px solid #333;
@@ -31,7 +35,7 @@
         input { padding: 12px; width: 80%; font-size: 1.1rem; margin-bottom: 15px; }
         #progress-text { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
         
-        /* Animacje */
+        /* Animacje specjalne */
         @keyframes shake {
             0% { transform: translate(1px, 1px); }
             50% { transform: translate(-3px, -2px); }
@@ -43,7 +47,7 @@
 </head>
 <body>
 
-<div id="survey-box">
+<div id="ui-container">
     <div id="progress-text">Krok 1 z 100</div>
     <h2 id="question">Czy jesteś gotów na najważniejszy test w Twoim życiu?</h2>
     <div id="input-area"></div>
@@ -57,39 +61,109 @@
     let currentStep = 1;
     const totalSteps = 100;
 
+    // Lista 100 unikalnych, coraz dziwniejszych pytań
     const questions = [
         "Czy lubisz tryb ciemny (Dark Mode)?",
         "Czy chcesz zobaczyć uśmiechnięte buźki?",
         "Wpisz swoje imię (będzie latać!):",
-        "Czy włączamy latające figury?",
+        "Czy włączamy latające figury geometryczne?",
         "Czy chcesz, żeby strona zaczęła drżeć?",
-        "Wpisz ulubione przekleństwo (kulturalnie!):",
-        "Czy Twoim zdaniem kawa jest lepsza od herbaty?",
-        "Czy odwrócić kolory strony?",
+        "Wpisz ulubione zwierzę:",
+        "Czy woda jest mokra?",
+        "Czy odwrócić kolory strony (Invert)?",
         "Wpisz nazwę swojego miasta:",
         "Czy chcesz, żeby wszystko zaczęło się kręcić?",
         "Czy czujesz już lekkie poirytowanie?",
         "Wpisz coś głupiego:",
         "Czy boisz się pająków?",
-        "Czy woda w kranie jest smaczna?",
+        "Wpisz tytuł ulubionego filmu:",
         "Czy chcesz, żeby przyciski zaczęły uciekać?",
         "Wpisz imię swojego wroga:",
         "Czy wierzysz w UFO?",
         "Czy lubisz pizzę z ananasem?",
         "Wpisz 'CHCE KONIEC':",
         "Czy 2+2 to na pewno 4?",
-        // ... (skrypt automatycznie wygeneruje resztę do 100)
+        "Jesteś gotów na 21. pytanie?", // --- KROK 21 ---
+        "Jak oceniasz tego latającego kota?",
+        "Czy chcesz więcej GIFów?",
+        "Wpisz losowe słowo:",
+        "Czy to pytanie ma sens?",
+        "Czy chcesz więcej chaosu?",
+        "Klikniesz 'Tak'?",
+        "Co o tym myślisz?",
+        "Czy lubisz placki?",
+        "Czy to już koniec?",
+        "Wpisz nazwę koloru:",
+        "Czy trawa jest zielona?",
+        "Ile to jest 10x10?",
+        "Czy lubisz deszcz?",
+        "Wpisz model swojego telefonu:",
+        "Czy chcesz, żeby napisy były większe?",
+        "Wpisz 'Troll':",
+        "Czy lubisz góry?",
+        "Czy wierzysz w magię?",
+        "Wpisz markę swojego samochodu:",
+        "Czy nadal tu jesteś?",
+        "Czy Twoja cierpliwość się kończy?",
+        "Wpisz 'Tak' albo 'Nie':",
+        "Czy lubisz lody?",
+        "Czy Twoja klawiatura działa?",
+        "Wpisz imię swojej mamy:",
+        "Czy jesteś szczęśliwy?",
+        "Ile to jest 5+5?",
+        "Czy lubisz taniec?",
+        "Wpisz losową liczbę:",
+        "Czy to jest trudne?",
+        "Wpisz 'Chaos':",
+        "Czy lubisz spać?",
+        "Wpisz swoje marzenie:",
+        "Czy Twoja myszka działa?",
+        "Czy lubisz owoce?",
+        "Wpisz 'Koniec':",
+        "Czy Twoje oczy się męczą?",
+        "Wpisz losową literę:",
+        "Czy lubisz muzykę?",
+        "Wpisz 'Nuda':",
+        "Czy Twoja głowa boli?",
+        "Wpisz 'Pętla':",
+        "Czy to jest śmieszne?",
+        "Wpisz 'Trollowanie':",
+        "Czy Twoje plecy bolą?",
+        "Wpisz 'Złe Pytanie':",
+        "Czy Twoje stopy bolą?",
+        "Wpisz 'Tak':",
+        "Czy Twoje uszy bolą?",
+        "Wpisz 'Nie':",
+        "Czy Twoje włosy bolą?",
+        "Wpisz 'Koniec':",
+        "Czy Twoja ręka boli?",
+        "Wpisz 'Stop':",
+        "Czy Twoja nogi bolą?",
+        "Wpisz 'Koniec':",
+        "Czy Twój brzuch boli?",
+        "Wpisz 'Chaos':",
+        "Czy Twoja klawiatura boli?",
+        "Wpisz 'Troll':",
+        "Czy Twój monitor boli?",
+        "Wpisz 'Nuda':",
+        "Czy Twój system boli?",
+        "Wpisz 'Pętla':",
+        "Czy Twój kod boli?",
+        "Wpisz 'Złe Pytanie':",
+        "Czy Twoje odpowiedzi bolą?",
+        "Wpisz 'Tak':",
+        "Czy Twoje pytania bolą?",
+        "Wpisz 'Nie':",
+        "Czy Twoje myśli bolą?",
+        "Wpisz 'Koniec':",
+        "Czy Twoja głowa boli?",
+        "Wpisz 'Troll':",
+        "Czy Twój kod boli?",
+        "Wpisz 'Pętla':",
+        "Czy nadal tu jesteś?",
+        "Wpisz 'Chaos':",
+        "Czy to koniec?", // --- KROK 100 ---
     ];
-
-    // Dopełnienie listy do 100, jeśli brakuje
-    for (let i = questions.length; i < 100; i++) {
-        const randomQ = [
-            "Czy nadal tu jesteś?", "Wpisz losowe słowo:", "Czy to pytanie ma sens?",
-            "Czy chcesz więcej chaosu?", "Klikniesz 'Tak'?", "Co o tym myślisz?",
-            "Czy lubisz placki?", "Czy to już koniec?", "Wpisz nazwę koloru:"
-        ];
-        questions.push(randomQ[Math.floor(Math.random() * randomQ.length)]);
-    }
 
     function next(val) {
         applyEffects(currentStep, val);
@@ -98,7 +172,12 @@
         if (currentStep <= totalSteps) {
             updateUI();
         } else {
-            document.getElementById('survey-box').innerHTML = "<h1>GRATULACJE!</h1><p>Przetrwałeś 100 pytań. Jesteś mistrzem cierpliwości.</p>";
+            // Koniec ankiety
+            document.getElementById('ui-container').innerHTML = "<h1>GRATULACJE!</h1><p>Przetrwałeś 100 pytań. Jesteś mistrzem cierpliwości (albo nie masz co robić).</p>";
+            // Zatrzymaj wszystkie animacje i chaos
+            document.body.style.filter = "none";
+            document.body.style.animation = "none";
+            document.body.style.transform = "none";
         }
     }
 
@@ -110,6 +189,7 @@
         const inputArea = document.getElementById('input-area');
         const buttonArea = document.getElementById('button-area');
 
+        // Sprawdź, czy pytanie wymaga wpisania tekstu
         if (qText.includes("Wpisz")) {
             inputArea.innerHTML = '<input type="text" id="user-in" placeholder="Pisz tutaj...">';
             buttonArea.innerHTML = '<button onclick="handleInput()">Wyślij</button>';
@@ -125,21 +205,22 @@
     }
 
     function applyEffects(step, val) {
-        const box = document.getElementById('survey-box');
-        
+        const uiContainer = document.getElementById('ui-container');
+        const valLower = val.toLowerCase();
+
         // 1. Dark Mode
         if (step === 1 && val === 'Tak') {
             document.body.style.background = "#1a1a1a";
-            box.style.background = "#333";
-            box.style.color = "white";
+            uiContainer.style.background = "#333";
+            uiContainer.style.color = "white";
         }
         // 2. Emojis
         if (step === 2 && val === 'Tak') {
-            setInterval(() => createBouncer("😊", 40), 2000);
+            setInterval(() => createBouncer("😊", 40), 1000); // Co sekundę
         }
-        // 3. Teksty DVD
+        // 3. Teksty DVD (zawsze gdy wpisano coś)
         if (questions[step-1].includes("Wpisz")) {
-            createBouncer(val, 25);
+            createBouncingText(val);
         }
         // 4. Figury
         if (step === 4 && val === 'Tak') {
@@ -147,7 +228,7 @@
         }
         // 5. Drżenie
         if (step === 5 && val === 'Tak') {
-            box.style.animation = "shake 0.1s infinite";
+            uiContainer.style.animation = "shake 0.1s infinite";
         }
         // 8. Invert
         if (step === 8 && val === 'Tak') {
@@ -161,12 +242,48 @@
                 document.body.style.transform = `rotate(${Math.random() * 360}deg)`;
             }, 5000);
         }
-        
-        // Dynamiczne utrudnienia co 10 pytań
-        if (step % 10 === 0) {
-            box.style.filter = `blur(${step/20}px)`;
-            createBouncer("TRUDNO?", 30);
+        // 15. Uciekające przyciski (trochę później, żeby nie od razu)
+        if (step === 15 && val === 'Tak') {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.style.transition = "transform 0.2s";
+                b.addEventListener('mouseover', () => {
+                    b.style.transform = `translate(${Math.random()*100-50}px, ${Math.random()*100-50}px)`;
+                });
+            });
         }
+        
+        // --- KROK 21 --- Latający GIF
+        if (step === 21) {
+            createFlyingGif("comment_1641342321gOylMNWKRPTn5oGQL6HeDe.gif");
+        }
+
+        // Dynamiczne utrudnienia co 10 pytań (po 20.)
+        if (step % 10 === 0 && step > 20) {
+            document.body.style.filter = `blur(${step/40}px)`; // Powolne rozmywanie
+            createBouncingText("TRUDNO?");
+        }
+    }
+
+    // --- FUNKCJE EFEKTÓW ---
+
+    function createBouncingText(txt) {
+        const t = document.createElement('div');
+        t.className = 'bouncing-text';
+        t.innerText = txt;
+        document.body.appendChild(t);
+        
+        let x = Math.random() * (window.innerWidth - 200), y = Math.random() * (window.innerHeight - 50);
+        let dx = 4, dy = 4;
+
+        function animateText() {
+            x += dx; y += dy;
+            if (x <= 0 || x >= window.innerWidth - t.offsetWidth) { dx *= -1; t.style.color = getRandomColor(); }
+            if (y <= 0 || y >= window.innerHeight - t.offsetHeight) { dy *= -1; t.style.color = getRandomColor(); }
+            t.style.left = x + 'px'; t.style.top = y + 'px';
+            requestAnimationFrame(animateText);
+        }
+        animateText();
     }
 
     function createBouncer(text, size) {
@@ -177,37 +294,65 @@
         el.style.color = `hsl(${Math.random()*360}, 100%, 50%)`;
         document.body.appendChild(el);
 
-        let x = Math.random() * window.innerWidth, y = Math.random() * window.innerHeight;
+        let x = Math.random() * (window.innerWidth - size), y = Math.random() * (window.innerHeight - size);
         let dx = (Math.random() - 0.5) * 8, dy = (Math.random() - 0.5) * 8;
 
-        function anim() {
+        function animEmoji() {
             x += dx; y += dy;
             if (x <= 0 || x >= window.innerWidth - el.offsetWidth) dx *= -1;
             if (y <= 0 || y >= window.innerHeight - el.offsetHeight) dy *= -1;
             el.style.left = x + 'px'; el.style.top = y + 'px';
-            requestAnimationFrame(anim);
+            requestAnimationFrame(animEmoji);
         }
-        anim();
+        animEmoji();
     }
 
     function createShape() {
         const s = document.createElement('div');
         s.className = 'shape';
-        s.style.width = "50px"; s.style.height = "50px";
-        s.style.border = "3px solid red";
-        s.style.background = "rgba(255,0,0,0.2)";
+        const size = 50;
+        s.style.width = size + "px"; s.style.height = size + "px";
+        s.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
+        s.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%'; // Koło lub kwadrat
         document.body.appendChild(s);
-        // ... ruch podobny do bouncera ...
-        let x = Math.random() * window.innerWidth, y = Math.random() * window.innerHeight;
-        let dx = 5, dy = 5;
-        function anim() {
+        
+        let x = Math.random() * (window.innerWidth - size), y = Math.random() * (window.innerHeight - size);
+        let dx = 6, dy = 6;
+        function animShape() {
             x += dx; y += dy;
-            if (x <= 0 || x >= window.innerWidth - 50) dx *= -1;
-            if (y <= 0 || y >= window.innerHeight - 50) dy *= -1;
+            if (x <= 0 || x >= window.innerWidth - size) dx *= -1;
+            if (y <= 0 || y >= window.innerHeight - size) dy *= -1;
             s.style.left = x + 'px'; s.style.top = y + 'px';
-            requestAnimationFrame(anim);
+            requestAnimationFrame(animShape);
         }
-        anim();
+        animShape();
+    }
+
+    function createFlyingGif(url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.position = "absolute";
+        img.style.width = "250px"; // Możesz zmienić rozmiar
+        img.style.zIndex = "5000"; // Nad wszystkim
+        img.style.pointerEvents = "none"; // Nie da się go kliknąć
+        img.onerror = function() { console.error("Nie znaleziono pliku GIF: " + url); };
+        document.body.appendChild(img);
+
+        let x = Math.random() * (window.innerWidth - 250), y = Math.random() * (window.innerHeight - 250);
+        let dx = 8, dy = 8; // Szybkość
+
+        function animateGif() {
+            x += dx; y += dy;
+            if (x <= 0 || x >= window.innerWidth - 250) dx *= -1;
+            if (y <= 0 || y >= window.innerHeight - 250) dy *= -1;
+            img.style.left = x + 'px'; img.style.top = y + 'px';
+            requestAnimationFrame(animateGif);
+        }
+        animateGif();
+    }
+
+    function getRandomColor() {
+        return `hsl(${Math.random()*360}, 100%, 50%)`;
     }
 </script>
 
