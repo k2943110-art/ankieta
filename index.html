@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ankieta Satysfakcji Użytkownika</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .survey-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 15%;
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.5s;
+        }
+        h2 { color: #333; font-size: 1.2rem; margin-bottom: 25px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        button {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        button:hover { background: #f0f0f0; border-color: #bbb; }
+        .footer { margin-top: 20px; font-size: 0.8rem; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="survey-card">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div id="survey-content">
+        <p id="question-number" style="color: #666; font-weight: bold;">Pytanie 1 z 6</p>
+        <h2 id="question-text">Jak oceniasz ogólną przejrzystość interfejsu?</h2>
+        <div class="options">
+            <button onclick="nextQuestion()">Bardzo dobrze</button>
+            <button onclick="nextQuestion()">Przeciętnie</button>
+            <button onclick="nextQuestion()">Wymaga poprawy</button>
+        </div>
+    </div>
+    <div class="footer">Twoja opinia jest dla nas cenna.</div>
+</div>
+
+<script>
+    let currentStep = 1;
+    let totalSteps = 6;
+
+    const questions = [
+        "Czy często korzystasz z podobnych rozwiązań?",
+        "Jak oceniasz szybkość ładowania elementów?",
+        "Czy poleciłbyś naszą usługę znajomym?",
+        "Jak oceniasz kolorystykę formularza?",
+        "Czy preferujesz tryb ciemny (Dark Mode)?",
+        "Jak oceniasz intuicyjność nawigacji?",
+        "Czy uważasz, że pytania są zrozumiałe?",
+        "Ile czasu dziennie spędzasz w internecie?",
+        "Czy korzystasz z urządzeń mobilnych?"
+    ];
+
+    function nextQuestion() {
+        currentStep++;
+        
+        // Mechanizm "nieskończoności"
+        if (currentStep >= 5) {
+            totalSteps = currentStep + 1; // Zawsze brakuje jednego do końca
+            document.getElementById('progress').style.width = "85%"; // Nigdy nie dobije do 100%
+        } else {
+            let progressPercent = (currentStep / totalSteps) * 100;
+            document.getElementById('progress').style.width = progressPercent + "%";
+        }
+
+        // Zmiana tekstu pytania na losowe z listy
+        const randomQ = questions[Math.floor(Math.random() * questions.length)];
+        document.getElementById('question-text').innerText = randomQ;
+        document.getElementById('question-number').innerText = `Pytanie ${currentStep} z ${totalSteps}`;
+    }
+</script>
+
+</body>
+</html>
