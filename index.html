@@ -3,105 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ankieta Satysfakcji Użytkownika</title>
+    <title>Ankieta Personalizowana</title>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7f6;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background: white;
+            transition: background 0.5s;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
-        .survey-card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 90%;
+        #ui-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
             text-align: center;
+            z-index: 1000;
+            position: relative;
+            max-width: 400px;
         }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #eee;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            overflow: hidden;
+        .emoji-overlay {
+            position: absolute;
+            font-size: 50px;
+            pointer-events: none;
+            z-index: 500;
         }
-        .progress-fill {
-            width: 15%;
-            height: 100%;
-            background: #4CAF50;
-            transition: width 0.5s;
+        .shape {
+            position: absolute;
+            pointer-events: none;
+            z-index: 400;
+            opacity: 0.7;
         }
-        h2 { color: #333; font-size: 1.2rem; margin-bottom: 25px; }
-        .options { display: flex; flex-direction: column; gap: 10px; }
+        .bouncing-text {
+            position: absolute;
+            white-space: nowrap;
+            font-weight: bold;
+            font-size: 24px;
+            color: #ff0000;
+            pointer-events: none;
+            z-index: 2000;
+        }
         button {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
+            padding: 10px 20px;
+            margin: 5px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
-        button:hover { background: #f0f0f0; border-color: #bbb; }
-        .footer { margin-top: 20px; font-size: 0.8rem; color: #999; }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="survey-card">
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-    <div id="survey-content">
-        <p id="question-number" style="color: #666; font-weight: bold;">Pytanie 1 z 6</p>
-        <h2 id="question-text">Jak oceniasz ogólną przejrzystość interfejsu?</h2>
-        <div class="options">
-            <button onclick="nextQuestion()">Bardzo dobrze</button>
-            <button onclick="nextQuestion()">Przeciętnie</button>
-            <button onclick="nextQuestion()">Wymaga poprawy</button>
-        </div>
+<div id="ui-container">
+    <h2 id="question">Pytanie 1: Czy lubisz tryb ciemny (Dark Mode)?</h2>
+    <div id="input-zone"></div>
+    <div id="button-zone">
+        <button onclick="answer('tak')">Tak</button>
+        <button onclick="answer('nie')">Nie</button>
     </div>
-    <div class="footer">Twoja opinia jest dla nas cenna.</div>
 </div>
 
 <script>
-    let currentStep = 1;
-    let totalSteps = 6;
+    let step = 1;
+    let bouncingTexts = [];
 
     const questions = [
-        "Czy często korzystasz z podobnych rozwiązań?",
-        "Jak oceniasz szybkość ładowania elementów?",
-        "Czy poleciłbyś naszą usługę znajomym?",
-        "Jak oceniasz kolorystykę formularza?",
-        "Czy preferujesz tryb ciemny (Dark Mode)?",
-        "Jak oceniasz intuicyjność nawigacji?",
-        "Czy uważasz, że pytania są zrozumiałe?",
-        "Ile czasu dziennie spędzasz w internecie?",
-        "Czy korzystasz z urządzeń mobilnych?"
+        "Czy lubisz tryb ciemny (Dark Mode)?",
+        "Czy chcesz zobaczyć uśmiechnięte buźki?",
+        "Czy podobają Ci się latające figury geometryczne?",
+        "Wpisz coś, co ma teraz zacząć latać po ekranie:",
+        "Czy chcesz, żeby wszystko zaczęło się trząść?",
+        "Czy Twoim zdaniem na stronie jest już wystarczający bałagan?",
+        "Wpisz jeszcze jedno słowo do kolekcji:",
+        "Czy chcesz, żeby kolory zaczęły wariować?",
+        "Czy na pewno chcesz iść dalej? (Pytanie 9/100)",
+        "Wpisz imię osoby, którą chcesz przestraszyć tym chaosem:"
     ];
 
-    function nextQuestion() {
-        currentStep++;
-        
-        // Mechanizm "nieskończoności"
-        if (currentStep >= 5) {
-            totalSteps = currentStep + 1; // Zawsze brakuje jednego do końca
-            document.getElementById('progress').style.width = "85%"; // Nigdy nie dobije do 100%
+    function answer(val) {
+        processEffect(val);
+        step++;
+        if (step > questions.length) {
+            // Jeśli skończą się pytania, generuj losowe
+            showQuestion("Pytanie " + step + ": Czy nadal tu jesteś?");
         } else {
-            let progressPercent = (currentStep / totalSteps) * 100;
-            document.getElementById('progress').style.width = progressPercent + "%";
+            showQuestion(questions[step-1]);
+        }
+    }
+
+    function showQuestion(text) {
+        document.getElementById('question').innerText = text;
+        const inputZone = document.getElementById('input-zone');
+        const buttonZone = document.getElementById('button-zone');
+
+        // Jeśli pytanie wymaga wpisania tekstu (zawiera "Wpisz")
+        if (text.includes("Wpisz")) {
+            inputZone.innerHTML = '<input type="text" id="user-input" placeholder="Wpisz tutaj...">';
+            buttonZone.innerHTML = '<button onclick="handleInputAnswer()">Zatwierdź i lećmy dalej</button>';
+        } else {
+            inputZone.innerHTML = '';
+            buttonZone.innerHTML = '<button onclick="answer(\'tak\')">Tak</button><button onclick="answer(\'nie\')">Nie</button>';
+        }
+    }
+
+    function handleInputAnswer() {
+        const val = document.getElementById('user-input').value;
+        answer(val);
+    }
+
+    function processEffect(val) {
+        const v = val.toLowerCase();
+
+        // Reakcja na Dark Mode
+        if (step === 1 && v === 'tak') {
+            document.body.style.background = "#222";
+            document.getElementById('ui-container').style.background = "rgba(50,50,50,0.9)";
+            document.getElementById('ui-container').style.color = "white";
         }
 
-        // Zmiana tekstu pytania na losowe z listy
-        const randomQ = questions[Math.floor(Math.random() * questions.length)];
-        document.getElementById('question-text').innerText = randomQ;
-        document.getElementById('question-number').innerText = `Pytanie ${currentStep} z ${totalSteps}`;
+        // Reakcja na uśmiechy
+        if (step === 2 && v === 'tak') {
+            setInterval(() => {
+                const e = document.createElement('div');
+                e.className = 'emoji-overlay';
+                e.innerText = '😊';
+                e.style.left = Math.random() * 90 + 'vw';
+                e.style.top = Math.random() * 90 + 'vh';
+                document.body.appendChild(e);
+            }, 1000);
+        }
+
+        // Reakcja na figury
+        if (step === 3 && v === 'tak') {
+            for(let i=0; i<15; i++) createShape();
+        }
+
+        // Reakcja na wpisany tekst (DVD Bounce)
+        if (step === 4 || step === 7 || step === 10) {
+            createBouncingText(val);
+        }
+
+        // Trzęsienie ziemi
+        if (step === 5 && v === 'tak') {
+            document.getElementById('ui-container').style.animation = "shake 0.2s infinite";
+        }
+    }
+
+    // --- FUNKCJE EFEKTÓW ---
+
+    function createShape() {
+        const s = document.createElement('div');
+        s.className = 'shape';
+        const size = Math.random() * 50 + 20;
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.background = `hsl(${Math.random()*360}, 70%, 50%)`;
+        s.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
+        document.body.appendChild(s);
+
+        let posX = Math.random() * window.innerWidth;
+        let posY = Math.random() * window.innerHeight;
+        let velX = (Math.random() - 0.5) * 5;
+        let velY = (Math.random() - 0.5) * 5;
+
+        function move() {
+            posX += velX; posY += velY;
+            if (posX < 0 || posX > window.innerWidth - size) velX *= -1;
+            if (posY < 0 || posY > window.innerHeight - size) velY *= -1;
+            s.style.left = posX + 'px';
+            s.style.top = posY + 'px';
+            requestAnimationFrame(move);
+        }
+        move();
+    }
+
+    function createBouncingText(txt) {
+        const t = document.createElement('div');
+        t.className = 'bouncing-text';
+        t.innerText = txt;
+        document.body.appendChild(t);
+        
+        let x = Math.random() * (window.innerWidth - 100);
+        let y = Math.random() * (window.innerHeight - 30);
+        let dx = 3;
+        let dy = 3;
+
+        function animate() {
+            x += dx; y += dy;
+            if (x <= 0 || x >= window.innerWidth - t.offsetWidth) { dx *= -1; t.style.color = getRandomColor(); }
+            if (y <= 0 || y >= window.innerHeight - t.offsetHeight) { dy *= -1; t.style.color = getRandomColor(); }
+            t.style.left = x + 'px';
+            t.style.top = y + 'px';
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
+
+    function getRandomColor() {
+        return `hsl(${Math.random()*360}, 100%, 50%)`;
     }
 </script>
+
+<style>
+    @keyframes shake {
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        20% { transform: translate(-3px, 0px) rotate(1deg); }
+        40% { transform: translate(3px, 2px) rotate(-1deg); }
+        60% { transform: translate(-3px, 1px) rotate(0deg); }
+        80% { transform: translate(3px, -1px) rotate(1deg); }
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+</style>
 
 </body>
 </html>
